@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>NFA to DFA Converter</title>
+    <meta name="description" content="A visual NFA to DFA converter for finite automaton.">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" type="image/png" href="src/img/favicon.png" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+
+    <!-- Import fonts from Google Fonts, such as Roboto -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap">
+
+    <!-- Material Icons provides in-line action icons, such as those in the right-click edit menu in the canvas -->
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css">
+
+    <!-- Bulma provides a lightweight CSS3 library, including Flexbox grid layouts and button styling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    
+    {% block css %}{% endblock %}
+    <title>{% block title %} {{ config["APP_NAME"] }} {% endblock %}</title>
+</head>
+
+<body>
+    <div class="notification is-danger" id="warning" style="display: none;">
+        <button class="delete"></button>
+        <span class="notification-body"></span>
+    </div>
+
+    <div class="columns is-desktop">
+        <div class="column">
+            <div class="card title" id="nfa-title">
+                <div class="card-content">
+                    <div class="columns">
+                        <div class="column">
+                            <h1>
+                                Finite Automaton
+                                (FA)
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="nfa-container" class="box" style="padding:0px; position: relative;">
+                <div class="btn-container is-flex">
+                    <button class="button orange-button" id="reset" title="Clear" disabled>&times;</button>
+                    <button class="button blue-button" id="convert" title="Convert" disabled>&gt;</button>
+                </div>
+                <canvas id="nfa"></canvas>
+            </div>
+            <div class="card block" id="nfa-delta-transitions">
+                <header class="card-header">
+                    <p class="card-header-title fsa-description">
+                        N = (<em>Q, E, 𝛿, q<sub>0</sub>, F</em> )
+                    </p>
+                </header>
+                <div class="card-content">
+                    <div class="fsa-description">
+                        <div class="columns" style="margin-bottom: 0px;">
+                            <div class="column">
+                                <em>Q</em> = <span class="states"></span>
+                            </div>
+                            <div class="column">
+                                <em>E</em> = <span class="alphabet"></span>
+                            </div>
+                            <div class="column">
+                                <em>q<sub>0</sub></em> = <span class="startState"></span>
+                            </div>
+                            <div class="column">
+                                <em>F</em> = <span class="acceptStates"></span>
+                            </div>
+                        </div>
+                        <div>
+                            𝛿 =
+                        </div>
+                    </div>
+                    <table class="table is-bordered is-striped is-fullwidth"></table>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="card title" id="dfa-title">
+                <div class="card-content">
+                    <div class="columns">
+                        <div class="column">
+                            <h1>
+                                Deterministic Finite Automaton (DFA)
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="dfa-container" class="box" style="padding:0px; position: relative;">
+                <p class="dfa-conversion-step" id="dfa-conversion-step"></p>
+                <canvas id="dfa"></canvas>
+            </div>
+            <div class="card block" id="dfa-delta-transitions">
+                <header class="card-header">
+                    <p class="card-header-title fsa-description">
+                        M = (<em>Q', E, 𝛿', q<sub>0</sub>', F'</em> )
+                    </p>
+                </header>
+                <div class="card-content">
+                    <div class="fsa-description">
+                        <div class="columns" style="margin-bottom: 0px;">
+                            <div class="column">
+                                <em>Q'</em> = <span class="states"></span>
+                            </div>
+                            <div class="column">
+                                <em>E</em> = <span class="alphabet"></span>
+                            </div>
+                            <div class="column">
+                                <em>q<sub>0</sub>'</em> = <span class="startState"></span>
+                            </div>
+                            <div class="column">
+                                <em>F'</em> = <span class="acceptStates"></span>
+                            </div>
+                        </div>
+                        <div>
+                            𝛿 =
+                        </div>
+                    </div>
+                    <table class="table is-bordered is-striped is-fullwidth"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/index.js') }}" type="module"></script>
+</body>
+
+</html>
