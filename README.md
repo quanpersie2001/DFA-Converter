@@ -34,6 +34,7 @@ UI/UI I used and custom in [nfa-to-dfa](https://github.com/joeylemon/nfa-to-dfa)
     pip install -r requirements.txt
     ```
 2. **Set environment variables**
+
     Edit your environment in `.env`
 
 3. **Run server**
