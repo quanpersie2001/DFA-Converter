@@ -34,9 +34,8 @@ UI/UI I used and custom in [nfa-to-dfa](https://github.com/joeylemon/nfa-to-dfa)
     pip install -r requirements.txt
     ```
 2. **Set environment variables**
-    ```shell
-    set_env.ps1
-    ```
+    Edit your environment in `.env`
+
 3. **Run server**
     ```shell
     flask run --port=8000

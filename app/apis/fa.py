@@ -26,6 +26,10 @@ class FA:
     
 
     def epsilon_closure(self, states):
+        """
+        Một tập hợp các state có thể đạt được từ state A chỉ với epsilon 
+        (bao gồm cả A)
+        """
         closure = set(states)
         if isinstance(states, str):
             states = {states}
