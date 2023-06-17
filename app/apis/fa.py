@@ -26,6 +26,25 @@ class FA:
         self.start_state = start_state
         self.accepting_states = accepting_states
         self.extra_state = 'ε'
+        self.reachable_states = list(self.__get_reachable_states())
+
+
+    def __get_reachable_states(self):
+        reachable_states = set()
+        reachable_states.add(self.start_state)
+        
+        # Iteratively find reachable states
+        while True:
+            new_states = set()
+            for state in reachable_states:
+                if state in self.transitions:
+                    new_states.update(list(chain.from_iterable(self.transitions[state].values())))
+            new_states.difference_update(reachable_states)
+            if not new_states:
+                break
+            reachable_states.update(new_states)
+        
+        return reachable_states
     
 
     def __epsilon_closure(self, states):
@@ -176,31 +195,32 @@ class FA:
         """
             Tạo bảng đánh dấu
         """
-        table_size = len(self.states)
+
+        table_size = len(self.reachable_states)
         table = np.zeros((table_size, table_size), dtype = bool)
 
         while True:
             unmarkable = True
-            for i in range(len(self.states)):
-                for j in range(len(self.states)):
+            for i in range(len(self.reachable_states)):
+                for j in range(len(self.reachable_states)):
 
                     if table[i][j]:
                         continue
 
                     if (
-                        self.states[i] in self.accepting_states and 
-                        self.states[j] not in self.accepting_states
+                        self.reachable_states[i] in self.accepting_states and 
+                        self.reachable_states[j] not in self.accepting_states
                     ):
                         unmarkable = False
                         table[i][j] = 1
                     else:
                         for symbol in self.alphabet:
-                            temp_state_1 = self.transitions[self.states[i]][symbol][0]
-                            temp_state_2 = self.transitions[self.states[j]][symbol][0]
+                            temp_state_1 = self.transitions[self.reachable_states[i]][symbol][0]
+                            temp_state_2 = self.transitions[self.reachable_states[j]][symbol][0]
 
                             if (
-                                table[self.states.index(temp_state_1)][self.states.index(temp_state_2)] or 
-                                table[self.states.index(temp_state_2)][self.states.index(temp_state_1)]
+                                table[self.reachable_states.index(temp_state_1)][self.reachable_states.index(temp_state_2)] or 
+                                table[self.reachable_states.index(temp_state_2)][self.reachable_states.index(temp_state_1)]
                             ):
                                 unmarkable = False
                                 table[i][j] = 1
@@ -216,21 +236,21 @@ class FA:
             Gộp những điểm đánh dấu trong bảng
         """
         unmarked_states_group = []
-        for i in range(len(self.states)):
-            for j in range(len(self.states)):
+        for i in range(len(self.reachable_states)):
+            for j in range(len(self.reachable_states)):
                 if i == j:
                     continue
                 if table[i][j] == 0:
-                    if [self.states[i], self.states[j]] and [self.states[j], self.states[i]] not in unmarked_states_group:
+                    if [self.reachable_states[i], self.reachable_states[j]] and [self.reachable_states[j], self.reachable_states[i]] not in unmarked_states_group:
                         check = False
                         for k in range(len(unmarked_states_group)):
-                            if self.states[i] in unmarked_states_group[k] or self.states[j] in unmarked_states_group[k]:
+                            if self.reachable_states[i] in unmarked_states_group[k] or self.reachable_states[j] in unmarked_states_group[k]:
                                 check = True
-                                unmarked_states_group[k].extend([self.states[i], self.states[j]])
+                                unmarked_states_group[k].extend([self.reachable_states[i], self.reachable_states[j]])
                                 unmarked_states_group[k] = list(set(unmarked_states_group[k]))
                                 break
                         if not check:
-                            unmarked_states_group.append([self.states[i], self.states[j]])
+                            unmarked_states_group.append([self.reachable_states[i], self.reachable_states[j]])
         return unmarked_states_group
 
 
@@ -245,7 +265,7 @@ class FA:
         self.__complete_otomat()
         table = self.__table_mark()
         unmarked_states_group = self.__unmarked_group(table)
-        markable_states = [state for state in self.states if state not in chain.from_iterable(unmarked_states_group)]
+        markable_states = [state for state in self.reachable_states if state not in chain.from_iterable(unmarked_states_group)]
 
         new_states = [x for x in markable_states]
         new_transitions = {}
@@ -254,11 +274,15 @@ class FA:
 
         new_accepting_states = [x for x in self.accepting_states]
 
+        new_start_state = self.start_state
+
         for group in unmarked_states_group:
             # Tạo trạng thái mới và thay thế trạng thái cũ
             new_state = frozenset(group)
             new_states.append(new_state)
             new_transitions[new_state] = {}
+            if self.start_state in group:
+                new_start_state = new_state
 
             for state in group:
                 for symbol in self.alphabet:
@@ -285,7 +309,7 @@ class FA:
                         new_accepting_states.append(new_states[i])
         new_accepting_states = list(set(new_accepting_states))
 
-        return True, FA(new_states, self.alphabet, new_transitions, self.start_state, new_accepting_states)
+        return True, FA(new_states, self.alphabet, new_transitions, new_start_state, new_accepting_states)
 
 
 def convert_output(output):
@@ -297,7 +321,10 @@ def convert_output(output):
             values = list(output[attr])
             result.setdefault(attr, [])
             for v in values:
-                result[attr].append('+'.join(v))
+                if isinstance(v, (set, frozenset, list)):
+                    result[attr].append('+'.join(v))
+                else:
+                    result[attr].append(v)
 
         elif isinstance(output[attr], dict):
             values = output[attr]
@@ -488,4 +515,6 @@ def minimize():
 
         return response(resp)
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return bad_request()

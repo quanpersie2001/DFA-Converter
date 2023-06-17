@@ -64,8 +64,8 @@ $typeSelect.addEventListener('change', () => {
         $dfaTitle.innerText = 'Deterministic Finite Automaton (DFA)';
     }
     if (type === 'minimize') {
-        $nfaTitle.innerText = 'Deterministic Finite Automaton (DEA)';
-        $dfaTitle.innerText = 'Minimized';
+        $nfaTitle.innerText = 'Deterministic Finite Automaton (DFA)';
+        $dfaTitle.innerText = 'Finite Automaton - Minimized';
     }
 })
 
