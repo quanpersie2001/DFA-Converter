@@ -358,15 +358,24 @@ export default class VisualFSA extends EventHandler {
         this.overlay.addEventListener('keydown', function (e) {
             if (!this.overlay || e.key === 'Shift') return
 
-            let key = e.key
-            if (e.shiftKey) { key = key.toUpperCase() }
+            // let key = e.key
+            // if (e.shiftKey) { key = key.toUpperCase() }
+            //
+            // if (key.length === 1) {
+            //     this.addTransition(from, to, key === 'e' ? 'ε' : key)
+            //     this.render()
+            // }
+            //
+            // this.overlay.deletePrevious()
 
-            if (key.length === 1) {
-                this.addTransition(from, to, key === 'e' ? 'ε' : key)
-                this.render()
+            if (e.keyCode === 13) {
+                let text = document.getElementById('symbol-transition').value;
+                if (text && text.length > 0) {
+                    this.addTransition(from, to, text.replace('e', 'ε'));
+                    this.render();
+                }
+                this.overlay.deletePrevious()
             }
-
-            this.overlay.deletePrevious()
         }.bind(this))
 
         this.overlay.addEventListener('close', () => {
