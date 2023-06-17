@@ -11,7 +11,13 @@ export default class OverlayMessage extends EventHandler {
         super()
         this.deletePrevious()
 
-        document.querySelector(selector).insertAdjacentHTML('beforeend', `<div class="message-overlay" id="message-overlay">${message}</div>`)
+        // document.querySelector(selector).insertAdjacentHTML('beforeend', `<div class="message-overlay" id="message-overlay">${message}</div>`)
+        document.querySelector(selector).insertAdjacentHTML('beforeend', `
+            <div class="message-overlay" id="message-overlay">
+                ${message}
+                <input id="symbol-transition">
+            </div>
+        `)
 
         document.addEventListener('keydown', this.keydown.bind(this))
     }
