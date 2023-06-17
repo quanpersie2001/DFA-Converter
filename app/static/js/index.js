@@ -43,15 +43,36 @@ function draw () {
     window.requestAnimationFrame(draw)
 }
 
+const $nfaTitle = document.querySelector('#nfa-title h1');
+const $dfaTitle = document.querySelector('#dfa-title h1');
+const $resetBtn = document.querySelector('#reset');
+const $submitBtn = document.querySelector('#convert');
+const $typeSelect = document.querySelector('#select-type');
+
 function setButtonsState (enabled) {
-    document.querySelector('#reset').disabled = !enabled
-    document.querySelector('#convert').disabled = !enabled
+    $resetBtn.disabled = !enabled
+    $submitBtn.disabled = !enabled
 }
+
+$typeSelect.addEventListener('change', () => {
+    if (nfa.visual.fsa.states.length > 0) {
+        setButtonsState(true)
+    }
+    let type = $typeSelect.value;
+    if (type === 'converter') {
+        $nfaTitle.innerText = 'Finite Automaton (FA)';
+        $dfaTitle.innerText = 'Deterministic Finite Automaton (DFA)';
+    }
+    if (type === 'minimize') {
+        $nfaTitle.innerText = 'Deterministic Finite Automaton (DEA)';
+        $dfaTitle.innerText = 'Minimized';
+    }
+})
 
 /**
  * Clear
  */
-document.querySelector('#reset').addEventListener('click', () => {
+$resetBtn.addEventListener('click', () => {
     nfa.visual.reset()
     dfa.visual.reset()
 })
@@ -59,8 +80,10 @@ document.querySelector('#reset').addEventListener('click', () => {
 /**
  * Convert
  */
-document.querySelector('#convert').addEventListener('click', () => {
-    return utils.sendRequest('/api/converter', {'input' : nfa.visual.toJSON()}, res => {
+$submitBtn.addEventListener('click', () => {
+    let type = $typeSelect.value;
+    $submitBtn.disabled = true;
+    return utils.sendRequest(`/api/${type}`, {'input' : nfa.visual.toJSON()}, res => {
         dfa.visual.fromCustomJSON(res)
     })
 })
